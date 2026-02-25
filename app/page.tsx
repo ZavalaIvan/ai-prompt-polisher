@@ -25,49 +25,67 @@ export default function Home() {
   }
 
   return (
-    <main className="min-h-screen bg-zinc-950 text-white p-6 flex items-center justify-center">
-      <div className="w-full max-w-2xl space-y-4">
-        <h1 className="text-2xl font-bold">AI Prompt Polisher</h1>
-        <p className="text-zinc-400 text-sm">
-          Pega un prompt flojo y te lo devuelvo mejorado para obtener mejores respuestas de IA.
-        </p>
+    <main className="min-h-screen bg-zinc-950 text-white flex items-center justify-center p-6">
+      <div className="w-full max-w-xl">
+        <header className="mb-6 text-center">
+          <h1 className="text-3xl font-semibold">AI Prompt Polisher</h1>
+          <p className="text-zinc-400 mt-2 text-sm">
+            Convierte prompts flojos en instrucciones claras para obtener mejores respuestas de IA.
+          </p>
+        </header>
 
-        <textarea
-          className="w-full min-h-[140px] p-3 rounded bg-zinc-900 border border-zinc-700"
-          placeholder="Escribe tu prompt aquí..."
-          value={prompt}
-          onChange={(e) => setPrompt(e.target.value)}
-        />
+        <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-4 space-y-3">
+          <textarea
+            className="w-full min-h-[120px] p-3 rounded-lg bg-zinc-950 border border-zinc-700 focus:outline-none focus:ring-2 focus:ring-white/20"
+            placeholder="Ej: Quiero que ChatGPT me ayude a escribir un post para Instagram sobre mi barbería"
+            value={prompt}
+            onChange={(e) => setPrompt(e.target.value)}
+          />
 
-        <select
-          className="w-full p-2 rounded bg-zinc-900 border border-zinc-700"
-          value={tone}
-          onChange={(e) => setTone(e.target.value)}
-        >
-          <option value="claro">Claro</option>
-          <option value="técnico">Técnico</option>
-          <option value="creativo">Creativo</option>
-        </select>
-
-        <button
-          onClick={handleSubmit}
-          disabled={loading}
-          className="w-full bg-white text-black py-2 rounded font-semibold hover:bg-zinc-200 transition disabled:opacity-50"
-        >
-          {loading ? 'Mejorando...' : 'Mejorar prompt'}
-        </button>
-
-        {result && (
-          <div className="mt-4 p-4 rounded bg-zinc-900 border border-zinc-700">
-            <h2 className="font-semibold mb-2">Prompt mejorado:</h2>
-            <pre className="whitespace-pre-wrap text-sm">{result}</pre>
+          <div className="flex gap-2">
+            <select
+              className="flex-1 p-2 rounded-lg bg-zinc-950 border border-zinc-700"
+              value={tone}
+              onChange={(e) => setTone(e.target.value)}
+            >
+              <option value="claro">Claro</option>
+              <option value="técnico">Técnico</option>
+              <option value="creativo">Creativo</option>
+            </select>
 
             <button
-              onClick={() => navigator.clipboard.writeText(result)}
-              className="mt-2 text-xs text-zinc-300 underline"
+              onClick={handleSubmit}
+              disabled={loading}
+              className="px-4 py-2 rounded-lg bg-white text-black font-medium hover:bg-zinc-200 transition disabled:opacity-50"
             >
-              Copiar al portapapeles
+              {loading ? 'Mejorando...' : 'Mejorar'}
             </button>
+          </div>
+
+          {loading && (
+            <p className="text-xs text-zinc-400 animate-pulse">
+              Analizando tu prompt…
+            </p>
+          )}
+        </div>
+
+        {result && (
+          <div className="mt-4 bg-zinc-900 border border-zinc-800 rounded-xl p-4">
+            <div className="flex items-center justify-between mb-2">
+              <h2 className="font-medium">Prompt mejorado</h2>
+              <button
+                onClick={() => navigator.clipboard.writeText(result)}
+                className="text-xs text-zinc-400 hover:text-white underline"
+              >
+                Copiar
+              </button>
+            </div>
+            <pre className="whitespace-pre-wrap text-sm text-zinc-200">
+              {result}
+            </pre>
+            <p className="mt-2 text-xs text-zinc-500">
+              Tip: pégalo directo en ChatGPT o tu herramienta de IA.
+            </p>
           </div>
         )}
       </div>

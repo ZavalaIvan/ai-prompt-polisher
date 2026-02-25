@@ -1,12 +1,24 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 export default function Home() {
   const [prompt, setPrompt] = useState('')
   const [tone, setTone] = useState('claro')
   const [result, setResult] = useState('')
   const [loading, setLoading] = useState(false)
+  const [history, setHistory] = useState<string[]>([])
+
+  useEffect(() => {
+    const saved = localStorage.getItem('history')
+    if (saved) setHistory(JSON.parse(saved))
+  }, [])
+
+  const saveToHistory = (text: string) => {
+    const next = [text, ...history].slice(0, 3)
+    setHistory(next)
+    localStorage.setItem('history', JSON.stringify(next))
+  }
 
   const handleSubmit = async () => {
     if (!prompt) return
@@ -21,6 +33,7 @@ export default function Home() {
 
     const data = await res.json()
     setResult(data.result)
+    saveToHistory(data.result)
     setLoading(false)
   }
 
@@ -41,6 +54,11 @@ export default function Home() {
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
           />
+
+          {/* Contador de caracteres */}
+          <p className="text-xs text-zinc-500 text-right">
+            {prompt.length} caracteres
+          </p>
 
           <div className="flex gap-2">
             <select
@@ -67,6 +85,13 @@ export default function Home() {
               Analizando tu prompt…
             </p>
           )}
+
+          {/* Estado vacío con micro-copy */}
+          {!result && !loading && (
+            <p className="text-xs text-zinc-500">
+              Consejo: añade contexto + objetivo + formato deseado para mejores resultados.
+            </p>
+          )}
         </div>
 
         {result && (
@@ -86,6 +111,25 @@ export default function Home() {
             <p className="mt-2 text-xs text-zinc-500">
               Tip: pégalo directo en ChatGPT o tu herramienta de IA.
             </p>
+          </div>
+        )}
+
+        {/* Historial local */}
+        {history.length > 0 && (
+          <div className="mt-4">
+            <p className="text-xs text-zinc-400 mb-1">Últimos prompts generados</p>
+            <ul className="space-y-1">
+              {history.map((h, i) => (
+                <li
+                  key={i}
+                  className="text-xs text-zinc-500 truncate cursor-pointer hover:text-white hover:underline"
+                  onClick={() => setResult(h)}
+                  title="Click para volver a ver"
+                >
+                  {h}
+                </li>
+              ))}
+            </ul>
           </div>
         )}
       </div>
